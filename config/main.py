@@ -3555,23 +3555,27 @@ def lldp(ctx, redis_unix_socket_path):
 @click.argument('interface_name', metavar='<interface_name>', required=False)
 @click.pass_context
 def dot1q_adv_type(ctx, cap_type, enable, interface_name="all"):
-    print(cap_type, enable, interface_name)
     db = ctx.obj['db']
-    print("type {}".format(cap_type))
     if cap_type not in ["all", "name", "pvid"] :
         ctx.fail("Invalid type {} all/name/pvid".format(cap_type))
 
     if enable not in ["enable", "disable"] :
         ctx.fail("Invalid option {} enable/disable".format(cap_type))
+    all_port_list = db.get_keys("PORT")
     port_list = []
     if interface_name == "all":
-        port_list = db.get_keys("PORT")
+        port_list = all_port_list
     else:
-        port_list.append(interface_name)
+        interface_name = interface_name.split(',')
+        for port in interface_name:
+            if port in all_port_list:
+                port_list.append(port)
+            else:
+                print("Warning: invalid interface {}".format(port))
     print(port_list)
+    print(interface_name)
     for port in port_list:
         port_cfg = db.get_entry('CFG_LLDP_DOT1Q_CAPBILITY', port)
-        print(port_cfg)
         if cap_type == "all" or cap_type == "name":
             port_cfg["name"] = 1 if enable == "enable" else 0
         if cap_type == "all" or cap_type == "pvid":
