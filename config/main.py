@@ -3540,19 +3540,28 @@ def switch(ctx):
     """switch related config"""
     pass
 
-@switch.command('shell')
+@switch.command('sdk_shell')
 @click.pass_context
-@click.argument('en', metavar='<en>', required=True, type=int)
+@click.argument('en', metavar='<en>', required=True, type=click.Choice(['enable', 'disable']))
 def set_sdk_diag_shell(ctx, en):
     tmp_file = "/tmp/swss.json"
     json_file = "/etc/swss/config.d/switch.json"
-    command = " docker cp   swss:" + json_file + " " + tmp_file
 
+    import time
+    try:
+        os.remove(tmp_file)
+    except:
+        pass
+
+    command = " docker cp   swss:" + json_file + " " + tmp_file
+    print(command)
     subprocess.Popen(command, shell=True)
-    with open (tmp_file) as f:
+    time.sleep(2)
+
+    with open (tmp_file, "r") as f:
         cfg = json.load(f)
 
-    cfg[0]["SWITCH_TABLE:switch"]["sdk_diag_shell"] = en
+    cfg[0]["SWITCH_TABLE:switch"]["sdk_diag_shell"] = 1 if en == 'enable' else 0
 
     with open (tmp_file, "w") as f:
         json.dump(cfg,f,indent=4, ensure_ascii=False)
