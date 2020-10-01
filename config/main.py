@@ -3548,8 +3548,7 @@ def set_sdk_diag_shell(ctx, en):
     json_file = "/etc/swss/config.d/switch.json"
     command = " docker cp   swss:" + json_file + " " + tmp_file
 
-    proc = subprocess.Popen(command, shell=True)
-    import json
+    subprocess.Popen(command, shell=True)
     with open (tmp_file) as f:
         cfg = json.load(f)
 
@@ -3559,11 +3558,10 @@ def set_sdk_diag_shell(ctx, en):
         json.dump(cfg,f,indent=4, ensure_ascii=False)
 
     command = " docker cp  " + tmp_file +" "+ "swss:"+json_file
-    proc = subprocess.Popen(command, shell=True)
+    subprocess.Popen(command, shell=True)
 
     command = "docker exec swss swssconfig " + json_file
-    proc = subprocess.Popen(command, shell=True)
-    (out, err) = proc.communicate()
+    subprocess.Popen(command, shell=True)
 
 if __name__ == '__main__':
     config()
