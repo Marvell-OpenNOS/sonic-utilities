@@ -1,7 +1,7 @@
 #! /usr/bin/python -u
 
 import json
-import netaddr
+#import netaddr
 import os
 import subprocess
 import sys
@@ -9,17 +9,17 @@ import sys
 import click
 from natsort import natsorted
 import netifaces
-from pkg_resources import parse_version
+#from pkg_resources import parse_version
 
 import feature
 import interfaces
 import kube
-import mlnx
+#import mlnx
 import utilities_common.cli as clicommon
 import vlan
 import system_health
 
-from sonic_py_common import device_info, multi_asic
+#from sonic_py_common import device_info, multi_asic
 from swsssdk import ConfigDBConnector, SonicV2Connector
 from tabulate import tabulate
 from utilities_common.db import Db
@@ -55,7 +55,7 @@ def get_routing_stack():
 
 
 # Global Routing-Stack variable
-routing_stack = get_routing_stack()
+routing_stack = "frr"
 
 # Read given JSON file
 def readJsonFile(fileName):
@@ -714,6 +714,7 @@ def get_if_master(iface):
 @ip.command()
 def interfaces():
     """Show interfaces IPv4 address"""
+    import netaddr
     header = ['Interface', 'Master', 'IPv4 address/mask', 'Admin/Oper', 'BGP Neighbor', 'Neighbor IP']
     data = []
     bgp_peer = get_bgp_peer()
@@ -984,6 +985,7 @@ def get_hw_info_dict():
     """
     This function is used to get the HW info helper function
     """
+    from sonic_py_common import device_info, multi_asic
     hw_info_dict = {}
 
     version_info = device_info.get_sonic_version_info()
@@ -999,11 +1001,11 @@ def get_hw_info_dict():
 def platform():
     """Show platform-specific hardware info"""
     pass
-
+'''
 version_info = device_info.get_sonic_version_info()
 if (version_info and version_info.get('asic_type') == 'mellanox'):
     platform.add_command(mlnx.mlnx)
-
+'''
 # 'summary' subcommand ("show platform summary")
 @platform.command()
 @click.option('--json', is_flag=True, help="JSON output")
@@ -1132,6 +1134,7 @@ def logging(process, lines, follow, verbose):
 @cli.command()
 @click.option("--verbose", is_flag=True, help="Enable verbose output")
 def version(verbose):
+    from sonic_py_common import device_info
     """Show version information"""
     version_info = device_info.get_sonic_version_info()
     hw_info_dict = get_hw_info_dict()
@@ -1381,6 +1384,7 @@ def bgp(verbose):
 @click.option('--verbose', is_flag=True, help="Enable verbose output")
 def ntp(ctx, verbose):
     """Show NTP information"""
+    from pkg_resources import parse_version
     ntpstat_cmd = "ntpstat"
     ntpcmd = "ntpq -p -n"
     if is_mgmt_vrf_enabled(ctx) is True:
