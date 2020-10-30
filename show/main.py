@@ -19,7 +19,7 @@ import utilities_common.cli as clicommon
 import vlan
 import system_health
 
-#from sonic_py_common import device_info, multi_asic
+from sonic_py_common import device_info, multi_asic
 from swsssdk import ConfigDBConnector, SonicV2Connector
 from tabulate import tabulate
 from utilities_common.db import Db
@@ -985,7 +985,6 @@ def get_hw_info_dict():
     """
     This function is used to get the HW info helper function
     """
-    from sonic_py_common import device_info, multi_asic
     hw_info_dict = {}
 
     version_info = device_info.get_sonic_version_info()
@@ -1001,11 +1000,12 @@ def get_hw_info_dict():
 def platform():
     """Show platform-specific hardware info"""
     pass
-'''
+
 version_info = device_info.get_sonic_version_info()
 if (version_info and version_info.get('asic_type') == 'mellanox'):
+    import mlnx
     platform.add_command(mlnx.mlnx)
-'''
+
 # 'summary' subcommand ("show platform summary")
 @platform.command()
 @click.option('--json', is_flag=True, help="JSON output")
@@ -1134,7 +1134,6 @@ def logging(process, lines, follow, verbose):
 @cli.command()
 @click.option("--verbose", is_flag=True, help="Enable verbose output")
 def version(verbose):
-    from sonic_py_common import device_info
     """Show version information"""
     version_info = device_info.get_sonic_version_info()
     hw_info_dict = get_hw_info_dict()
