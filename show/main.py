@@ -1,7 +1,7 @@
 #! /usr/bin/python -u
 
 import json
-import netaddr
+#import netaddr
 import os
 import subprocess
 import sys
@@ -9,12 +9,12 @@ import sys
 import click
 from natsort import natsorted
 import netifaces
-from pkg_resources import parse_version
+#from pkg_resources import parse_version
 
 import feature
 import interfaces
 import kube
-import mlnx
+#import mlnx
 import utilities_common.cli as clicommon
 import vlan
 import system_health
@@ -55,7 +55,7 @@ def get_routing_stack():
 
 
 # Global Routing-Stack variable
-routing_stack = get_routing_stack()
+routing_stack = "frr"
 
 # Read given JSON file
 def readJsonFile(fileName):
@@ -714,6 +714,7 @@ def get_if_master(iface):
 @ip.command()
 def interfaces():
     """Show interfaces IPv4 address"""
+    import netaddr
     header = ['Interface', 'Master', 'IPv4 address/mask', 'Admin/Oper', 'BGP Neighbor', 'Neighbor IP']
     data = []
     bgp_peer = get_bgp_peer()
@@ -1002,6 +1003,7 @@ def platform():
 
 version_info = device_info.get_sonic_version_info()
 if (version_info and version_info.get('asic_type') == 'mellanox'):
+    import mlnx
     platform.add_command(mlnx.mlnx)
 
 # 'summary' subcommand ("show platform summary")
@@ -1381,6 +1383,7 @@ def bgp(verbose):
 @click.option('--verbose', is_flag=True, help="Enable verbose output")
 def ntp(ctx, verbose):
     """Show NTP information"""
+    from pkg_resources import parse_version
     ntpstat_cmd = "ntpstat"
     ntpcmd = "ntpq -p -n"
     if is_mgmt_vrf_enabled(ctx) is True:
