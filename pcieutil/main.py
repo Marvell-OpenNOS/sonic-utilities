@@ -154,12 +154,13 @@ def pcie_show():
     print_test_title(testname)
     resultInfo = platform_pcieutil.get_pcie_device()
     for item in resultInfo:
+        Domain = item["domain"]
         Bus = item["bus"]
         Dev = item["dev"]
         Fn = item["fn"]
         Name = item["name"]
         Id = item["id"]
-        print "bus:dev.fn %s:%s.%s - dev_id=0x%s,  %s" % (Bus,Dev,Fn,Id,Name) 
+        print "bus:dev.fn %s:%s:%s.%s - dev_id=0x%s,  %s" % (Domain,Bus,Dev,Fn,Id,Name)
         
     
 
