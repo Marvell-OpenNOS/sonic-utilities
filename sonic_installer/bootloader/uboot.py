@@ -24,12 +24,12 @@ class UbootBootloader(OnieInstallerBootloader):
         proc = subprocess.Popen("/usr/bin/fw_printenv -n sonic_version_1", shell=True, stdout=subprocess.PIPE)
         (out, _) = proc.communicate()
         image = out.rstrip()
-        if IMAGE_PREFIX in image:
+        if IMAGE_PREFIX in image or "NONE" in image:
             images.append(image)
         proc = subprocess.Popen("/usr/bin/fw_printenv -n sonic_version_2", shell=True, stdout=subprocess.PIPE)
         (out, _) = proc.communicate()
         image = out.rstrip()
-        if IMAGE_PREFIX in image:
+        if IMAGE_PREFIX in image or "NONE" in image:
             images.append(image)
         return images
 
