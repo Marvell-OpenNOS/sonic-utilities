@@ -3680,5 +3680,52 @@ def delete(ctx):
     sflow_tbl['global'].pop('agent_id')
     config_db.set_entry('SFLOW', 'global', sflow_tbl['global'])
 
+@config.group()
+@click.pass_context
+@click.option('-s', '--redis-unix-socket-path', help='unix socket path for redis connection')
+def lldp(ctx, redis_unix_socket_path):
+    """lldp related configuration tasks"""
+    kwargs = {}
+    if redis_unix_socket_path:
+        kwargs['unix_socket_path'] = redis_unix_socket_path
+    config_db = ConfigDBConnector(**kwargs)
+    config_db.connect(wait_for_init=False)
+    ctx.obj = {'db': config_db}
+    pass
+
+
+@lldp.command('dot1q_adv_type')
+@click.argument('cap_type', metavar='<type>', required=True)
+@click.argument('enable', metavar='<enable>', required=True)
+@click.argument('interface_name', metavar='<interface_name>', required=False)
+@click.pass_context
+def dot1q_adv_type(ctx, cap_type, enable, interface_name="all"):
+    db = ctx.obj['db']
+    if cap_type not in ["all", "name", "pvid"] :
+        ctx.fail("Invalid type {} all/name/pvid".format(cap_type))
+
+    if enable not in ["enable", "disable"] :
+        ctx.fail("Invalid option {} enable/disable".format(cap_type))
+    all_port_list = db.get_keys("PORT")
+    port_list = []
+    if interface_name == "all":
+        port_list = all_port_list
+    else:
+        interface_name = interface_name.split(',')
+        for port in interface_name:
+            if port in all_port_list:
+                port_list.append(port)
+            else:
+                print("Warning: invalid interface {}".format(port))
+    print(port_list)
+    print(interface_name)
+    for port in port_list:
+        port_cfg = db.get_entry('CFG_LLDP_DOT1Q_CAPBILITY', port)
+        if cap_type == "all" or cap_type == "name":
+            port_cfg["name"] = 1 if enable == "enable" else 0
+        if cap_type == "all" or cap_type == "pvid":
+            port_cfg["pvid"] = 1 if enable == "enable" else 0
+        db.set_entry('CFG_LLDP_DOT1Q_CAPBILITY', port, port_cfg)
+
 if __name__ == '__main__':
     config()
