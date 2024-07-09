@@ -155,7 +155,7 @@ setup(
         'swsssdk>=2.0.1',
         'tabulate==0.8.2',
         'xmltodict==0.12.0',
-        'zipp==1.2.0'  # Need to pin this down for Python 2, for Python 3 we should be able to remove altogether
+        'zipp==3.19.1'  # Need to pin this down for Python 2, for Python 3 we should be able to remove altogether
     ],
     setup_requires= [
         'pytest-runner',
